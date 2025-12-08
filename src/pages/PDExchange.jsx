@@ -20,11 +20,11 @@ export default function PDExchange() {
     const [previewURL, setPreviewURL] = useState(null);
 
     // Auto IST timestamp
-    const defaultIST = new Date()
-        .toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" })
-        .replace(" ", "T");
+    const nowIST = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
+    const formattedIST = nowIST.slice(0, 16).replace(" ", "T");
 
-    const [timestamp, setTimestamp] = useState(defaultIST);
+    const [timestamp, setTimestamp] = useState(formattedIST);
+
 
     // Calculations
     const fillVolume = bagVolume - leftover;
