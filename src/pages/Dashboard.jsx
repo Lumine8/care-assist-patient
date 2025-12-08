@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
-// import gsap from "gsap";
 
 import TodayUFCard from "../components/TodayUFCard";
 import DailyUFSummary from "../components/DailyUFSummary";
@@ -9,13 +8,9 @@ import UFTrendChart from "../components/UFTrendChart";
 import MobileNav from "../components/MobileNav";
 import ChatAssistant from "../components/ChatAssistant";
 
-
-
-
 import "../styles/DashboardUI.css";
 
 export default function Dashboard() {
-
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
 
@@ -49,14 +44,16 @@ export default function Dashboard() {
     if (!profile) return <p>Loading...</p>;
 
     return (
-        <div className="dashboard-page">   {/* 🔥 new wrapper */}
+        <div className="dashboard-page">
             <div className="dashboard-container page-padding-bottom">
 
                 {/* HEADER */}
                 <div ref={headerRef} className="dashboard-header">
                     <div>
-                        <h2>Welcome, {profile.username}</h2>
-                        <p className="dashboard-subtitle">Hospital ID: {profile.hospital_id}</p>
+                        <h2 className="dash-title">Welcome, {profile.username}</h2>
+                        <p className="dashboard-subtitle">
+                            Hospital ID: {profile.hospital_id}
+                        </p>
                     </div>
 
                     <button className="logout-btn" onClick={handleLogout}>
@@ -80,6 +77,7 @@ export default function Dashboard() {
                 </div>
 
             </div>
+
             <ChatAssistant />
             <MobileNav />
         </div>

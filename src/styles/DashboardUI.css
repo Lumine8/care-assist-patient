@@ -1,101 +1,113 @@
-/* Wrap page so it's centered and not stretched */
+/* -----------------------------------
+   PAGE WRAPPER
+----------------------------------- */
 .dashboard-page {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-/* ---------- GLOBAL LAYOUT ---------- */
-
-.dashboard-container {
-  padding: 22px;
-  padding-top: 28px;
-  max-width: 480px;
-  margin: 0 auto;
-  font-family: "Inter", sans-serif;
-}
-
-.page-padding-bottom {
+  background: #f5f8ff;
+  min-height: 100vh;
   padding-bottom: 90px;
 }
 
-/* ---------- HEADER ---------- */
+.dashboard-container {
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
 
+/* -----------------------------------
+   HEADER
+----------------------------------- */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 18px;
 }
 
-.logout-btn {
-  background: #ff4d4f;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 10px;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
+.dash-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
 }
 
 .dashboard-subtitle {
-  margin-top: -4px;
-  opacity: 0.75;
+  color: #6c7a99;
+  font-size: 14px;
+  margin-top: 4px;
 }
 
-/* ---------- TODAY UF CARD (GREEN VERSION) ---------- */
-
-.today-uf-card {
-  background: linear-gradient(135deg, #e6ffee, #f7fff9);
-  padding: 26px;
-  border-radius: 18px;
-  text-align: center;
-  margin-top: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0px 4px 14px rgba(0, 120, 0, 0.12);
-  border: 1px solid #c9f4d1;
+/* Logout Button */
+.logout-btn {
+  background: #ff5f5f;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.uf-label {
-  font-size: 17px;
-  font-weight: 600;
-  color: #1d4d1d;
-  opacity: 0.9;
+.logout-btn:hover {
+  background: #e64848;
 }
 
-.uf-value {
-  font-size: 44px;
-  font-weight: 800;
-  margin-top: 6px;
-  color: #16a34a;
-  text-shadow: 0px 2px 6px rgba(0, 255, 0, 0.25);
+/* -----------------------------------
+   TODAY UF CARD CONTAINER
+----------------------------------- */
+.uf-card-container {
+  margin-top: 10px;
 }
 
-.uf-value.negative {
-  color: #d9534f;
-  text-shadow: 0px 2px 6px rgba(255, 0, 0, 0.25);
-}
-
-/* ---------- DAILY EXCHANGE ROWS ---------- */
-
-.exchange-row {
+/* -----------------------------------
+   UF TREND CONTAINER
+----------------------------------- */
+.uf-chart-container {
   background: #ffffff;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+  margin-top: 20px;
+}
+
+/* -----------------------------------
+   DAILY EXCHANGES SECTION
+----------------------------------- */
+.daily-uf-summary {
+  margin-top: 20px;
+}
+
+/* Exchange row styling (if needed globally) */
+.exchange-row {
+  background: white;
   padding: 14px;
-  border-radius: 12px;
-  margin-bottom: 10px;
+  border-radius: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 12px;
   box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.06);
-  font-size: 15px;
 }
 
-/* ---------- UF TREND CHART ---------- */
+/* -----------------------------------
+   TEXT COLORS
+----------------------------------- */
+.good {
+  color: #0a9e28;
+}
 
-.uf-chart-container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+.bad {
+  color: #d62828;
+}
+
+/* -----------------------------------
+   RESPONSIVE
+----------------------------------- */
+@media (max-width: 420px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  .dash-title {
+    font-size: 22px;
+  }
 }

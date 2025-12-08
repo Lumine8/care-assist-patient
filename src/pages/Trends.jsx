@@ -18,7 +18,7 @@ export default function Trends() {
             <DailyUFSummary />
 
             <UFTrendChart />
-
+            <br /><br /><br /><br />
             <MobileNav />
         </div>
     );

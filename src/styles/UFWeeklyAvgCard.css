@@ -1,0 +1,53 @@
+/* ===== Weekly UF Card ===== */
+
+.uf-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: 0.25s ease;
+}
+
+.uf-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.uf-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e3352;
+  margin-bottom: 8px;
+}
+
+.uf-card-value {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-top: 4px;
+}
+
+/* Color logic (just in case you want class-based styling) */
+.uf-good {
+  color: #0a9e28; /* Negative UF = fluid removed (good) */
+}
+
+.uf-bad {
+  color: #e03131; /* Positive UF = fluid retained (bad) */
+}
+
+/* Mobile */
+@media (max-width: 420px) {
+  .uf-card {
+    padding: 18px;
+  }
+
+  .uf-card-value {
+    font-size: 28px;
+  }
+}

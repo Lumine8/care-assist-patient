@@ -17,6 +17,7 @@ export default function DailyUFSummary() {
 
         const today = new Date().toISOString().split("T")[0];
 
+        // Keeping your original filtering
         const { data } = await supabase
             .from("pd_exchanges")
             .select("*")
@@ -28,7 +29,11 @@ export default function DailyUFSummary() {
         setExchanges(data || []);
     };
 
-    useEffect(() => { const run = async () => { await fetchTodayExchanges(); }; run(); }, []);
+    // KEEP useEffect unchanged
+    useEffect(() => {
+        const run = async () => { await fetchTodayExchanges(); };
+        run();
+    }, []);
 
     useEffect(() => {
         if (exchanges.length > 0) {
@@ -42,11 +47,11 @@ export default function DailyUFSummary() {
         }
     }, [exchanges]);
 
-    const formatTime = (isoTime) =>
-        new Date(isoTime).toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
+    // 👉 No timezone conversion, no JS date conversion
+    const formatTime = (isoTime) => {
+        if (!isoTime) return "-";
+        return isoTime.split("T")[1]?.slice(0, 5) ?? "-"; // HH:MM
+    };
 
     return (
         <div>

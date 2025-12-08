@@ -79,6 +79,7 @@ export default function Profile() {
                 </button>
             </div>
         </div>
+            <br /><br /><br /><br />
             <MobileNav />
         </>
     );

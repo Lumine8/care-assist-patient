@@ -152,6 +152,8 @@ export default function ChatAssistant() {
                             <button className="send-btn" onClick={sendMessage}>➤</button>
                         </div>
                     </div>
+
+                    <br /><br /><br /><br />
                 </div>
             )}
         </>

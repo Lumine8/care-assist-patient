@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import "../styles/UFWeeklyAvgCard.css";
 import { supabase } from "../supabaseClient";
 
 export default function UFWeeklyAvgCard() {
@@ -6,6 +7,8 @@ export default function UFWeeklyAvgCard() {
 
     const loadWeeklyAvg = useCallback(async () => {
         const { data: user } = await supabase.auth.getUser();
+        if (!user?.user) return;
+
         const authId = user.user.id;
 
         const { data: patient } = await supabase
@@ -14,24 +17,32 @@ export default function UFWeeklyAvgCard() {
             .eq("auth_id", authId)
             .single();
 
+        if (!patient?.id) return;
+
+        // 🗓 Get date 7 days ago (only YYYY-MM-DD)
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const sevenDaysISO = sevenDaysAgo.toISOString().split("T")[0];
 
+        // 🔥 Query using timestamp instead of created_at
         const { data } = await supabase
             .from("pd_exchanges")
-            .select("uf")
+            .select("uf, timestamp")
             .eq("patient_id", patient.id)
-            .gte("created_at", sevenDaysAgo.toISOString());
+            .gte("timestamp", `${sevenDaysISO}T00:00`)
+            .order("timestamp", { ascending: true });
 
         if (!data || data.length === 0) {
             setAvgUF(0);
             return;
         }
 
-        const total = data.reduce((sum, r) => sum + r.uf, 0);
+        const total = data.reduce((sum, r) => sum + Number(r.uf || 0), 0);
         setAvgUF(Math.round(total / data.length));
+
     }, []);
 
+    // ⬇️ Keep useEffect EXACTLY as asked
     useEffect(() => {
         const run = async () => await loadWeeklyAvg();
         run();
@@ -40,7 +51,8 @@ export default function UFWeeklyAvgCard() {
     return (
         <div className="uf-card">
             <div className="uf-card-title">7-Day Avg UF</div>
-            <div className="uf-card-value" style={{ color: "#008f5a" }}>
+
+            <div className="uf-card-value" style={{ color: avgUF < 0 ? "#008f5a" : "#d9534f" }}>
                 {avgUF !== null ? `${avgUF} mL` : "Loading..."}
             </div>
         </div>
