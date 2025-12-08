@@ -17,16 +17,17 @@ export default function TodayUFCard() {
 
         const today = new Date().toISOString().split("T")[0];
 
-        const { data: ufLogs } = await supabase
+        const { data } = await supabase
             .from("pd_exchanges")
             .select("uf")
             .eq("patient_id", patient.id)
-            .gte("created_at", `${today}T00:00:00`)
-            .lte("created_at", `${today}T23:59:59`);
+            .gte("timestamp", `${today}T00:00`)
+            .lte("timestamp", `${today}T23:59`);
 
-        const totalUF = ufLogs.reduce((sum, row) => sum + row.uf, 0);
-        setTodayUF(totalUF);
+        const ufSum = data?.reduce((total, row) => total + (row.uf || 0), 0) || 0;
+        setTodayUF(ufSum);
     };
+
 
     useEffect(() => {
         (async () => {

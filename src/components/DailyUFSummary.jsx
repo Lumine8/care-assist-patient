@@ -21,33 +21,32 @@ export default function DailyUFSummary() {
             .from("pd_exchanges")
             .select("*")
             .eq("patient_id", patient.id)
-            .gte("created_at", `${today}T00:00:00`)
-            .lte("created_at", `${today}T23:59:59`)
-            .order("created_at", { ascending: true });
+            .gte("timestamp", `${today}T00:00`)
+            .lte("timestamp", `${today}T23:59`)
+            .order("timestamp", { ascending: true });
 
         setExchanges(data || []);
     };
 
-    // Load data on mount
-    useEffect(() => {
-        const run = async () => {
-            await fetchTodayExchanges();
-        };
-        run();
-    }, []);
+    useEffect(() => { const run = async () => { await fetchTodayExchanges(); }; run(); }, []);
 
-    // Run GSAP animation AFTER rows render
     useEffect(() => {
         if (exchanges.length > 0) {
             gsap.from(".exchange-row", {
                 opacity: 0,
                 x: -20,
-                duration: 0.5,
+                duration: 0.4,
                 stagger: 0.1,
-                ease: "power2.out"
+                ease: "power2.out",
             });
         }
     }, [exchanges]);
+
+    const formatTime = (isoTime) =>
+        new Date(isoTime).toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
 
     return (
         <div>
@@ -59,7 +58,7 @@ export default function DailyUFSummary() {
                 <div key={ex.id} className="exchange-row" style={styles.row}>
                     <strong>{ex.baxter_strength}</strong>
                     <span>UF: {ex.uf} mL</span>
-                    <span>{new Date(ex.created_at).toLocaleTimeString()}</span>
+                    <span>{formatTime(ex.timestamp)}</span>
                 </div>
             ))}
         </div>
@@ -72,9 +71,9 @@ const styles = {
         padding: 12,
         marginBottom: 10,
         borderRadius: 10,
-        boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center"
-    }
+        alignItems: "center",
+    },
 };

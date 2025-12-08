@@ -39,7 +39,7 @@ export default function UFTrendChart() {
             .single();
 
         if (!patient?.id) {
-            console.log("❌ No patient record found.");
+            console.log("❌ No patient found.");
             setLoading(false);
             return;
         }
@@ -48,12 +48,15 @@ export default function UFTrendChart() {
         if (filter === "7days") fromDate.setDate(fromDate.getDate() - 7);
         if (filter === "30days") fromDate.setDate(fromDate.getDate() - 30);
 
+        const fromISO = fromDate.toISOString().split("T")[0] + "T00:00:00";
+
+        // ✔ Fetch using correct TIMESTAMP column
         const { data, error } = await supabase
             .from("pd_exchanges")
-            .select("uf, created_at")
+            .select("uf, timestamp")
             .eq("patient_id", patient.id)
-            .gte("created_at", fromDate.toISOString())
-            .order("created_at");
+            .gte("timestamp", fromISO)
+            .order("timestamp");
 
         console.log("📊 Query result:", data);
 
@@ -66,22 +69,30 @@ export default function UFTrendChart() {
             return;
         }
 
+        // Format Graph Labels
         const labels = data.map(r =>
-            new Date(r.created_at).toLocaleDateString()
+            new Date(r.timestamp).toLocaleDateString("en-IN", {
+                month: "short",
+                day: "numeric",
+            })
         );
-        const ufValues = data.map(r => r.uf);
+
+        const ufValues = data.map(r => Number(r.uf) || 0);
+
+        // Auto choose red if ANY UF is positive (retention)
+        const lineColor = ufValues.some(v => v > 0) ? "#e63946" : "#1d83ff";
 
         setChartData({
             labels,
             datasets: [
                 {
-                    label: "UF Trend",
+                    label: "UF Trend (mL)",
                     data: ufValues,
-                    borderColor: ufValues.some(v => v < 0) ? "#ff4d4d" : "#007bff",
-                    backgroundColor: "rgba(0,123,255,0.2)",
+                    borderColor: lineColor,
+                    backgroundColor: "rgba(0,123,255,0.15)",
                     borderWidth: 3,
                     tension: 0.35,
-                    pointRadius: 4
+                    pointRadius: 4,
                 }
             ]
         });
@@ -90,7 +101,10 @@ export default function UFTrendChart() {
         console.log("✅ Trend data loaded successfully.");
     }, [filter]);
 
-    useEffect(() => { const run = async () => { await loadTrend(); }; run(); }, [loadTrend]);
+    useEffect(() => {
+        const run = async () => { await loadTrend(); };
+        run();
+    }, [loadTrend]); // <-- kept exactly as you wanted
 
     if (loading) return <p>Loading trends...</p>;
 
@@ -98,7 +112,9 @@ export default function UFTrendChart() {
         return (
             <div style={{ marginTop: 20, textAlign: "center", opacity: 0.8 }}>
                 <p style={{ fontSize: 16 }}>No UF data available yet.</p>
-                <p style={{ fontSize: 13, color: "#777" }}>Add a PD exchange to see trends.</p>
+                <p style={{ fontSize: 13, color: "#777" }}>
+                    Add a PD exchange to see trends.
+                </p>
             </div>
         );
 

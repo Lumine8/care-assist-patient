@@ -8,26 +8,46 @@ import gsap from "gsap";
 export default function PDExchange() {
     const containerRef = useRef(null);
 
-    // Form states
+    // -------------------------
+    // FORM STATES
+    // -------------------------
     const [baxterStrength, setBaxterStrength] = useState("1.5%");
     const [bagVolume, setBagVolume] = useState(2000);
     const [leftover, setLeftover] = useState(0);
     const [drain, setDrain] = useState(0);
     const [weight, setWeight] = useState("");
-    const [notes, setNotes] = useState(""); // <-- NEW
+    const [notes, setNotes] = useState("");
 
     const [imageFile, setImageFile] = useState(null);
     const [previewURL, setPreviewURL] = useState(null);
 
-    // Auto IST timestamp
-    const [timestamp, setTimestamp] = useState(() => {
-        const nowIST = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
-        return nowIST.slice(0, 16).replace(" ", "T"); // runs ONLY once
-    });
+    // -------------------------
+    // GENERATE DEFAULT IST WITHOUT SECONDS
+    // -------------------------
+    const generateIST = () => {
+        const now = new Date().toLocaleString("sv-SE", {
+            timeZone: "Asia/Kolkata"
+        });
+        // sv-SE format is YYYY-MM-DD HH:MM:SS → remove seconds
+        const formatted = now.replace(" ", "T").slice(0, 16);
+        return formatted;
+    };
 
+    const [timestamp, setTimestamp] = useState(generateIST());
 
+    // -------------------------
+    // FIX TIMESTAMP (ADD SECONDS ALWAYS)
+    // -------------------------
+    const normalizeTimestamp = (ts) => {
+        // If format is YYYY-MM-DDTHH:MM (length 16) → append :00
+        if (ts.length === 16) return ts + ":00";
 
-    // Calculations
+        return ts;
+    };
+
+    // -------------------------
+    // CALCULATIONS
+    // -------------------------
     const fillVolume = bagVolume - leftover;
     const uf = fillVolume - drain;
 
@@ -40,6 +60,9 @@ export default function PDExchange() {
         });
     }, []);
 
+    // -------------------------
+    // IMAGE HANDLING
+    // -------------------------
     const handleImageChange = (file) => {
         if (!file) return;
         setImageFile(file);
@@ -51,17 +74,20 @@ export default function PDExchange() {
         const { data, error } = await supabase.storage
             .from("pd_images")
             .upload(fileName, file);
-        console.log(data, error);
-
+        console.log(data);
         if (error) {
             alert("Image upload error: " + error.message);
             return null;
         }
 
-        return supabase.storage.from("pd_images").getPublicUrl(fileName).data.publicUrl;
+        return supabase.storage
+            .from("pd_images")
+            .getPublicUrl(fileName).data.publicUrl;
     };
 
-    // Submit handler
+    // -------------------------
+    // SUBMIT HANDLER
+    // -------------------------
     const handleSubmit = async () => {
         const user = await supabase.auth.getUser();
         const authId = user.data.user.id;
@@ -77,14 +103,16 @@ export default function PDExchange() {
             uploadedImageURL = await handleImageUpload(imageFile);
         }
 
+        const fixedTimestamp = normalizeTimestamp(timestamp);
+
         const { error } = await supabase.from("pd_exchanges").insert({
             patient_id: patient.id,
-            timestamp,
+            timestamp: fixedTimestamp, // FIXED — exact timestamp saved
             baxter_strength: baxterStrength,
             fill_volume: fillVolume,
             drain_volume: drain,
             weight,
-            notes, // <-- NEW
+            notes,
             image_url: uploadedImageURL,
         });
 
@@ -111,7 +139,6 @@ export default function PDExchange() {
                         value={timestamp}
                         onChange={(e) => setTimestamp(e.target.value)}
                     />
-
                 </div>
 
                 {/* WEIGHT */}
@@ -125,17 +152,20 @@ export default function PDExchange() {
                     />
                 </div>
 
-                {/* STRENGTH */}
+                {/* BAXTER STRENGTH */}
                 <div className="pd-card">
                     <label>Baxter Strength (%)</label>
-                    <select value={baxterStrength} onChange={(e) => setBaxterStrength(e.target.value)}>
+                    <select
+                        value={baxterStrength}
+                        onChange={(e) => setBaxterStrength(e.target.value)}
+                    >
                         <option value="1.5%">1.5%</option>
                         <option value="2.5%">2.5%</option>
                         <option value="7.5%">7.5%</option>
                     </select>
                 </div>
 
-                {/* BAG */}
+                {/* BAG VOLUME */}
                 <div className="pd-card">
                     <label>Bag Volume (mL)</label>
                     <input
@@ -164,7 +194,7 @@ export default function PDExchange() {
                     />
                 </div>
 
-                {/* UF */}
+                {/* UF DISPLAY */}
                 <div className="uf-display-box">
                     <div className="uf-title">UF:</div>
                     <div className={`uf-value ${uf < 0 ? "uf-neg" : "uf-pos"}`}>
@@ -188,7 +218,9 @@ export default function PDExchange() {
                             onChange={(e) => handleImageChange(e.target.files[0])}
                         />
 
-                        {previewURL && <img src={previewURL} alt="preview" className="image-preview" />}
+                        {previewURL && (
+                            <img src={previewURL} alt="preview" className="image-preview" />
+                        )}
 
                         <span className="file-upload-name">
                             {imageFile ? imageFile.name : "No file chosen"}
