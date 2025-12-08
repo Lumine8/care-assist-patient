@@ -1,64 +1,66 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient";
+import "../styles/PdExchange.css";
 
 import MobileNav from "../components/MobileNav";
 import gsap from "gsap";
-import "../styles/PdExchange.css";
 
 export default function PDExchange() {
-    console.log("PDExchange MOUNTED");
-
     const containerRef = useRef(null);
 
-    const [baxterStrength, setBaxterStrength] = useState("");
+    // Form states
+    const [baxterStrength, setBaxterStrength] = useState("1.5%");
     const [bagVolume, setBagVolume] = useState(2000);
     const [leftover, setLeftover] = useState(0);
     const [drain, setDrain] = useState(0);
+    const [weight, setWeight] = useState("");
+    const [notes, setNotes] = useState(""); // <-- NEW
+
     const [imageFile, setImageFile] = useState(null);
+    const [previewURL, setPreviewURL] = useState(null);
 
+    // Auto IST timestamp
+    const defaultIST = new Date()
+        .toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" })
+        .replace(" ", "T");
+
+    const [timestamp, setTimestamp] = useState(defaultIST);
+
+    // Calculations
     const fillVolume = bagVolume - leftover;
-    const uf = drain - fillVolume;
+    const uf = fillVolume - drain;
 
-    // ------------------------------
-    // GSAP ENTRY ANIMATION
-    // ------------------------------
     useEffect(() => {
-        const tl = gsap.timeline();
-        tl.from(containerRef.current, {
+        gsap.from(containerRef.current, {
             opacity: 0,
             y: 30,
-            duration: 0.5,
-            ease: "power2.out"
-        });
-        tl.from(".pd-card", {
-            opacity: 0,
-            y: 20,
-            duration: 0.4,
-            stagger: 0.12
+            duration: 0.6,
+            ease: "power2.out",
         });
     }, []);
 
-    // ------------------------------
-    // UPLOAD IMAGE TO SUPABASE
-    // ------------------------------
+    const handleImageChange = (file) => {
+        if (!file) return;
+        setImageFile(file);
+        setPreviewURL(URL.createObjectURL(file));
+    };
+
     const handleImageUpload = async (file) => {
         const fileName = `${Date.now()}-${file.name}`;
-
-        const { error } = await supabase.storage
+        const { data, error } = await supabase.storage
             .from("pd_images")
             .upload(fileName, file);
+        console.log(data, error);
 
         if (error) {
-            alert(error.message);
+            alert("Image upload error: " + error.message);
             return null;
         }
 
         return supabase.storage.from("pd_images").getPublicUrl(fileName).data.publicUrl;
     };
 
-    // ------------------------------
-    // SUBMIT TO DATABASE
-    // ------------------------------
+    // Submit handler
     const handleSubmit = async () => {
         const user = await supabase.auth.getUser();
         const authId = user.data.user.id;
@@ -69,26 +71,26 @@ export default function PDExchange() {
             .eq("auth_id", authId)
             .single();
 
-        let imageUrl = null;
-        if (imageFile) imageUrl = await handleImageUpload(imageFile);
+        let uploadedImageURL = null;
+        if (imageFile) {
+            uploadedImageURL = await handleImageUpload(imageFile);
+        }
 
         const { error } = await supabase.from("pd_exchanges").insert({
             patient_id: patient.id,
+            timestamp,
             baxter_strength: baxterStrength,
             fill_volume: fillVolume,
             drain_volume: drain,
-            image_url: imageUrl
+            weight,
+            notes, // <-- NEW
+            image_url: uploadedImageURL,
         });
 
         if (error) {
             alert(error.message);
         } else {
-            gsap.to(".submit-btn", {
-                scale: 1.1,
-                duration: 0.2,
-                yoyo: true,
-                repeat: 1
-            });
+            gsap.to(".submit-btn", { scale: 1.08, duration: 0.15, yoyo: true, repeat: 1 });
             alert("PD Exchange Recorded!");
         }
     };
@@ -96,20 +98,42 @@ export default function PDExchange() {
     return (
         <>
             <div ref={containerRef} className="pd-container">
-                <h2 className="pd-title">Peritoneal Dialysis Exchange</h2>
 
-                {/* Baxter Strength */}
+                <h2 className="pd-title">Peritoneal Dialysis (PD) Exchange</h2>
+                <p>* marked fields are mandatory</p>
+
+                {/* TIMESTAMP */}
+                <div className="pd-card">
+                    <label>Date & Time</label>
+                    <input
+                        type="datetime-local"
+                        value={timestamp}
+                        onChange={(e) => setTimestamp(e.target.value)}
+                    />
+                </div>
+
+                {/* WEIGHT */}
+                <div className="pd-card">
+                    <label>Weight (kg)*</label>
+                    <input
+                        type="number"
+                        placeholder="Enter weight"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
+                    />
+                </div>
+
+                {/* STRENGTH */}
                 <div className="pd-card">
                     <label>Baxter Strength (%)</label>
                     <select value={baxterStrength} onChange={(e) => setBaxterStrength(e.target.value)}>
-                        <option value="">Select strength</option>
                         <option value="1.5%">1.5%</option>
                         <option value="2.5%">2.5%</option>
                         <option value="4.25%">4.25%</option>
                     </select>
                 </div>
 
-                {/* Bag Volume */}
+                {/* BAG */}
                 <div className="pd-card">
                     <label>Bag Volume (mL)</label>
                     <input
@@ -119,9 +143,8 @@ export default function PDExchange() {
                     />
                 </div>
 
-                {/* Leftover */}
                 <div className="pd-card">
-                    <label>Leftover in Bag (mL)</label>
+                    <label>Leftover in Bag (mL)*</label>
                     <input
                         type="number"
                         value={leftover}
@@ -129,9 +152,9 @@ export default function PDExchange() {
                     />
                 </div>
 
-                {/* Drain */}
+                {/* DRAIN */}
                 <div className="pd-card">
-                    <label>Drain (mL)</label>
+                    <label>Drain (mL)*</label>
                     <input
                         type="number"
                         value={drain}
@@ -139,31 +162,56 @@ export default function PDExchange() {
                     />
                 </div>
 
-                {/* UF RESULT */}
-                <div className="pd-card uf-display">
-                    UF:{" "}
-                    <span className={uf >= 0 ? "uf-pos" : "uf-neg"}>
+                {/* UF */}
+                <div className="uf-display-box">
+                    <div className="uf-title">UF:</div>
+                    <div className={`uf-value ${uf < 0 ? "uf-neg" : "uf-pos"}`}>
                         {isNaN(uf) ? "-" : `${uf} mL`}
-                    </span>
+                    </div>
                 </div>
 
-                {/* Image Upload */}
+                {/* IMAGE UPLOAD */}
                 <div className="pd-card">
                     <label>Upload Drain Image (optional)</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setImageFile(e.target.files[0])}
-                    />
+                    <div className="file-upload-wrapper">
+                        <label className="file-upload-btn" htmlFor="drainImage">
+                            Choose Image
+                        </label>
+
+                        <input
+                            id="drainImage"
+                            type="file"
+                            accept="image/*"
+                            className="file-upload-input"
+                            onChange={(e) => handleImageChange(e.target.files[0])}
+                        />
+
+                        {previewURL && <img src={previewURL} alt="preview" className="image-preview" />}
+
+                        <span className="file-upload-name">
+                            {imageFile ? imageFile.name : "No file chosen"}
+                        </span>
+                    </div>
                 </div>
 
-                {/* SUBMIT BUTTON */}
+                {/* NOTES */}
+                <div className="pd-card">
+                    <label>Notes (optional)</label>
+                    <textarea
+                        placeholder="Enter observations (cloudiness, discomfort, fibrin, color, smell, etc.)"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="pd-notes"
+                        rows={3}
+                    ></textarea>
+                </div>
+
                 <button className="submit-btn" onClick={handleSubmit}>
                     Save Exchange
                 </button>
-                <br /><br />
-                <br /><br />
             </div>
+
+            <br /><br /><br />
             <MobileNav />
         </>
     );

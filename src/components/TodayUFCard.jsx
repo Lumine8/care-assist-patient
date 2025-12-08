@@ -44,7 +44,7 @@ export default function TodayUFCard() {
     return (
         <div className="today-uf-card" style={styles.card}>
             <h3>Today’s Total UF</h3>
-            <h1 style={{ color: todayUF >= 0 ? "green" : "red" }}>
+            <h1 style={{ color: todayUF >= 0 ? "red" : "green" }}>
                 {todayUF} mL
             </h1>
         </div>
