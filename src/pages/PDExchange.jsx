@@ -3,7 +3,7 @@ import { supabase } from "../supabaseClient";
 
 import MobileNav from "../components/MobileNav";
 import gsap from "gsap";
-import "../styles/PDExchange.css";
+import "../styles/PdExchange.css";
 
 export default function PDExchange() {
     console.log("PDExchange MOUNTED");
