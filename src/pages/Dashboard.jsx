@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import TodayUFCard from "../components/TodayUFCard";
 import DailyUFSummary from "../components/DailyUFSummary";
+import UFWeeklyAvgCard from "../components/UFWeeklyAvgCard";
 import UFTrendChart from "../components/UFTrendChart";
 import MobileNav from "../components/MobileNav";
 import ChatAssistant from "../components/ChatAssistant";
@@ -64,6 +65,11 @@ export default function Dashboard() {
                 {/* TODAY UF */}
                 <div ref={ufCardRef}>
                     <TodayUFCard />
+                </div>
+
+                <hr />
+                <div ref={ufCardRef}>
+                    <UFWeeklyAvgCard />
                 </div>
 
                 {/* EXCHANGES */}

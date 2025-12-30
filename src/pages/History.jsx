@@ -72,8 +72,8 @@ export default function History() {
                 if (weightCategory === "above" && w <= avgWeight + 0.5) return false;
             }
 
-            if (ufMin && s.uf < Number(ufMin)) return false;
-            if (ufMax && s.uf > Number(ufMax)) return false;
+            if (ufMin && s.uf > Number(ufMin)) return false;
+            if (ufMax && s.uf < Number(ufMax)) return false;
             if (baxter && s.baxter_strength !== baxter) return false;
 
             if (date && s.timestamp) {
