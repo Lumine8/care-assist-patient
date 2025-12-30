@@ -1,66 +1,123 @@
+/* =========================================
+   CONTAINER & FONTS
+   ========================================= */
 .profile-container {
   max-width: 480px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: system-ui, Arial, sans-serif;
+  padding: 24px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #334155; /* Slate Grey text */
 }
 
+/* =========================================
+   TITLES & HEADERS
+   ========================================= */
 .profile-title {
-  font-size: 26px;
+  font-size: 1.75rem; /* ~28px */
   font-weight: 800;
-  margin-bottom: 20px;
-}
-
-.profile-card {
-  background: #fff;
-  padding: 18px;
-  border-radius: 14px;
-  margin-bottom: 16px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+  color: #003c8f; /* Using your blue for the main title */
+  letter-spacing: -0.5px;
 }
 
 .profile-card h3 {
-  margin: 0 0 10px;
-  font-size: 17px;
+  margin: 0 0 16px;
+  font-size: 0.85rem; /* ~14px */
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #94a3b8; /* Light Grey for Section Headers */
 }
 
+/* =========================================
+   CARDS
+   ========================================= */
+.profile-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  /* Soft blue-tinted shadow */
+  box-shadow: 0 8px 24px rgba(0, 60, 143, 0.06);
+  border: 1px solid #f1f5f9;
+}
+
+/* Data Rows */
 .profile-card p {
-  font-size: 14px;
-  margin: 6px 0;
+  font-size: 1rem;
+  margin: 12px 0;
+  display: flex;
+  justify-content: space-between; /* Label Left, Value Right */
+  align-items: center;
+  border-bottom: 1px dashed #e2e8f0;
+  padding-bottom: 8px;
 }
 
+.profile-card p:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.profile-card strong {
+  color: #64748b; /* Label color */
+  font-weight: 500;
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
 .action-card {
+  /* Make the button container transparent */
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .profile-btn {
-  background: #007bff;
-  color: #fff;
+  background-color: #003c8f; /* YOUR COLOR */
+  color: #ffffff;
   border: none;
+  /* CHANGED: Reduced padding to make it thinner */
   padding: 12px;
-  border-radius: 10px;
-  font-size: 15px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
+  /* Shadow matching your blue */
+  box-shadow: 0 4px 12px rgba(0, 60, 143, 0.25);
 }
 
 .profile-btn:hover {
-  background: #0066d6;
+  background-color: #002a66; /* Darker shade of your blue */
+  transform: translateY(-2px);
 }
 
+.profile-btn:active {
+  transform: translateY(0);
+}
+
+/* Logout - kept distinctive but clean */
 .logout-btn {
-  background: #ff4a4a;
-  color: white;
-  border: none;
+  background-color: #fff1f2; /* Very light red bg */
+  color: #e11d48; /* Rose Red text */
+  border: 1px solid #e11d48;
+  /* CHANGED: Reduced padding to make it thinner */
   padding: 12px;
-  border-radius: 10px;
-  font-size: 15px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-  background: #e03939;
+  background-color: #e11d48;
+  color: #ffffff;
+  transform: translateY(-2px);
 }

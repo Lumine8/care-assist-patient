@@ -98,9 +98,9 @@ select {
 }
 
 .filter-btn.active {
-  background: #007bff;
+  background: #003c8f;
   color: white;
-  border-color: #007bff;
+  border-color: #003c8f;
   font-weight: 600;
 }
 

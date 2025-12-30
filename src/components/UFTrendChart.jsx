@@ -7,6 +7,7 @@ import {
     LinearScale,
     PointElement
 } from "chart.js";
+import "../styles/UFTrendChart.css";
 import { Line } from "react-chartjs-2";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);

@@ -157,7 +157,7 @@
 ---------------------------------------- */
 .submit-btn {
   width: 100%;
-  background: #0066ff;
+  background: #003c8f;
   color: white;
   padding: 15px;
   border: none;
@@ -170,7 +170,7 @@
 }
 
 .submit-btn:hover {
-  background: #0053d1;
+  background: #0066ff;
 }
 
 .submit-btn:active {

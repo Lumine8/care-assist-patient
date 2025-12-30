@@ -1,0 +1,101 @@
+/* =========================================================
+   UF TREND CHART — MOBILE FIRST
+========================================================= */
+
+/* Main Container */
+.trend-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+  border: 1px solid #f0f2f5;
+}
+
+/* --- Filter Buttons Group --- */
+.chart-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center; /* Center buttons */
+}
+
+.filter-btn {
+  flex: 1; /* Both buttons take equal width on mobile */
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid #e0e6ed;
+  background-color: #f8f9fa;
+  color: #64748b;
+  border-radius: 50px; /* Pill shape */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Active State (Selected) */
+.filter-btn.active {
+  background-color: #003c8f; /* Brand Blue */
+  color: #ffffff;
+  border-color: #003c8f;
+  box-shadow: 0 4px 10px rgba(0, 60, 143, 0.2);
+}
+
+/* Hover State (Desktop only usually) */
+.filter-btn:hover:not(.active) {
+  background-color: #eef3ff;
+  color: #003c8f;
+}
+
+/* --- Chart Wrapper --- */
+/* Critical for Chart.js responsiveness */
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 250px; /* Fixed height ensures it's readable on phone */
+}
+
+/* --- No Data / Loading States --- */
+.status-message {
+  text-align: center;
+  padding: 30px 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+  color: #64748b;
+}
+
+.status-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.status-subtitle {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* =========================================================
+   DESKTOP ENHANCEMENTS (Tablet & Up)
+========================================================= */
+@media (min-width: 768px) {
+  .trend-container {
+    padding: 24px 30px;
+  }
+
+  .chart-filters {
+    justify-content: flex-start; /* Align left on desktop */
+    gap: 16px;
+  }
+
+  .filter-btn {
+    flex: 0 1 auto; /* Buttons shrink to fit text */
+    min-width: 120px;
+  }
+
+  .chart-wrapper {
+    height: 350px; /* Taller chart on big screens */
+  }
+}

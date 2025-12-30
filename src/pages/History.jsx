@@ -170,7 +170,7 @@ export default function History() {
                     onChange={e => setDate(e.target.value)}
                 />
 
-                <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                <div style={{ display: "flex", gap: "10px", marginTop: "10px", }}>
                     <button className="btn primary" onClick={() => setFiltersApplied(true)}>
                         Apply
                     </button>

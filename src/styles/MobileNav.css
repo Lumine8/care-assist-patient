@@ -1,68 +1,93 @@
+/* =========================================
+   MOBILE NAVIGATION BAR
+   ========================================= */
+
 .mobile-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  background: #fff;
-  padding: 10px 0;
+  background: #ffffff;
+  border-top: 1px solid #e0e6ed; /* Softer border color */
+
+  /* Flexbox Layout */
   display: flex;
   justify-content: space-around;
-  border-top: 1px solid #ddd;
-  z-index: 99999; /* MOST IMPORTANT */
+  align-items: center;
+
+  /* Sizing & Spacing */
+  padding: 8px 0;
+  z-index: 99999; /* Keeps it on top of everything */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03); /* Subtle shadow for depth */
 }
 
-/* Remove underline from ALL nav-links */
-.mobile-nav a {
-  text-decoration: none !important;
+/* --- iPhone X+ Safe Area Support --- */
+/* Ensures the nav bar doesn't sit behind the swipe indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-nav {
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  }
 }
 
-/* Also remove blue highlight on mobile tap */
-.mobile-nav a:focus,
-.mobile-nav button:focus {
-  outline: none;
-}
-
-/* Remove default button styling */
-.mobile-nav button {
-  border: none;
-  background: none;
-  padding: 0;
-  text-decoration: none !important;
-}
-
-/* Make sure nav-btn text also doesn't underline */
-.nav-btn {
-  text-decoration: none !important;
-}
+/* =========================================
+   NAVIGATION BUTTONS
+   ========================================= */
 
 .nav-btn {
-  background: none;
-  border: none;
+  /* Layout */
   flex: 1;
-  text-align: center;
-  padding: 6px 0;
-  font-size: 13px;
-  color: #777;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; /* Space between Icon and Text */
+
+  /* Reset Defaults */
+  background: none;
+  border: none;
+  text-decoration: none !important;
   cursor: pointer;
+
+  /* Mobile Tap UX */
+  -webkit-tap-highlight-color: transparent; /* Removes blue flash on Android/iOS */
+  outline: none;
+
+  /* Text & Colors */
+  padding: 6px 0;
+  color: #94a3b8; /* Inactive Color (Slate Grey) */
+  transition: color 0.2s ease; /* Smooth color change */
 }
 
+/* Active State (Automatically applied by NavLink) */
 .nav-btn.active {
-  color: #007bff;
-  font-weight: 600;
+  color: #003c8f; /* Your Brand Blue */
 }
 
+.nav-btn.active .nav-label {
+  font-weight: 600; /* Bold text for active tab */
+}
+
+/* =========================================
+   ICONS & LABELS
+   ========================================= */
+
+/* The React Icon (SVG) */
 .nav-icon {
-  font-size: 20px;
+  font-size: 1.5rem; /* 24px - Standard Mobile Size */
+  display: block;
 }
 
 .nav-label {
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px */
+  line-height: 1;
 }
 
-/* Prevent content from being hidden behind nav bar */
+/* =========================================
+   PAGE SPACING HELPER
+   ========================================= */
+
+/* Add this class to your main content container 
+   so the last item isn't hidden behind the nav bar */
 .page-padding-bottom {
-  padding-bottom: 80px;
+  padding-bottom: 90px;
 }
