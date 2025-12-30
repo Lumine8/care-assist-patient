@@ -86,7 +86,13 @@ body {
 }
 
 .auth-input:focus {
-  border-color: #4c97ff;
+  border-color: #003c8f;
+  box-shadow: 0 0 0 4px rgba(0, 60, 143, 0.2);
+  outline: none;
+}
+.auth-input::placeholder {
+  color: #a0aec0;
+  font-size: 0.95rem;
 }
 
 /* BUTTON */
@@ -95,7 +101,7 @@ body {
   padding: 13px;
   margin-top: 20px;
   border: none;
-  background: #006dff;
+  background: #003c8f;
   color: white;
   border-radius: 12px;
   font-size: 1rem;
