@@ -16,9 +16,9 @@ export default function MobileNav() {
                 <span className="nav-label">Add PD</span>
             </NavLink>
 
-            <NavLink to="/trends" className="nav-btn">
+            <NavLink to="/history" className="nav-btn">
                 <span className="nav-icon">📈</span>
-                <span className="nav-label">Trends</span>
+                <span className="nav-label">History</span>
             </NavLink>
 
             <NavLink to="/profile" className="nav-btn">

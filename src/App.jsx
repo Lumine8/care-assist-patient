@@ -4,8 +4,8 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import PDExchange from "./pages/PDExchange";
 import Profile from "./pages/Profile";
-import Trends from "./pages/Trends";
-import "../src/styles/Trends.css"
+import History from "./pages/History";
+import "../src/styles/History.css"
 
 import { Routes, Route } from "react-router-dom";
 // import MobileNav from "./components/MobileNav";
@@ -21,7 +21,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/pd-exchange" element={<PDExchange />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/trends" element={<Trends />} />
+        <Route path="/history" element={<History />} />
         <Route path="*" element={<p>404 Not Found</p>} />
       </Routes>
     </>

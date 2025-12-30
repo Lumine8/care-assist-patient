@@ -1,0 +1,160 @@
+/* ======================================================
+   PD HISTORY — MOBILE FIRST
+====================================================== */
+.dashboard-title {
+  /* font-size: 22px; */
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #003a80;
+  text-align: center;
+}
+/* ----------------------
+   FILTERS
+---------------------- */
+.history-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.history-filters input,
+.history-filters select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d0d7e2;
+  font-size: 0.9rem;
+  background: #ffffff;
+}
+
+.history-filters .btn {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
+
+/* ----------------------
+   DAY GROUP
+---------------------- */
+.day-group {
+  margin-bottom: 22px;
+}
+
+/* Header per date */
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #eef3ff;
+  color: #003c8f;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* ----------------------
+   TABLE WRAPPER (MOBILE)
+---------------------- */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ----------------------
+   TABLE
+---------------------- */
+.history-table {
+  width: 100%;
+  min-width: 720px; /* forces scroll on mobile */
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+
+  font-size: 0.82rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.history-table thead {
+  background: #f5f7ff;
+}
+
+.history-table th,
+.history-table td {
+  padding: 8px 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.history-table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #445a7c;
+}
+
+/* ----------------------
+   UF COLORS
+---------------------- */
+.text-green {
+  color: #008f5a;
+  font-weight: 700;
+}
+
+/* ----------------------
+   ACTION BUTTONS
+---------------------- */
+.action-cell {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+}
+
+.btn-icon.edit {
+  color: #005eff;
+}
+
+.btn-icon.del {
+  color: #c0392b;
+}
+
+/* ----------------------
+   DESKTOP ENHANCEMENTS
+---------------------- */
+@media (min-width: 768px) {
+  .history-filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .history-filters input,
+  .history-filters select {
+    min-width: 140px;
+  }
+
+  .day-header {
+    font-size: 1rem;
+  }
+
+  .history-table {
+    font-size: 0.9rem;
+  }
+
+  .history-table th {
+    font-size: 0.85rem;
+  }
+}
