@@ -62,7 +62,8 @@ export default function Profile() {
                 <p><strong>Username:</strong> {profile.username}</p>
                 <p><strong>Email:</strong> {profile.email}</p>
                 <p><strong>Hospital ID:</strong> {profile.hospital_id}</p>
-                <p><strong>Dialysis Type:</strong> {profile.dialysis_type}</p>
+                <p><strong>Dialysis Type:</strong> {profile.dialysis_type == "PD" ? "Peritoneal Dialysis"
+                    : profile.dialysis_type == "HD" ? "Hemodialysis" : "Unknown"}</p>
             </div>
 
             <div className="profile-card">
