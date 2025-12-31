@@ -183,19 +183,19 @@ export default function Home() {
                     <ul className="why-list">
                         <li>
                             <MdCheckCircle className="check-icon" />
-                            <span><strong>Prevent Complications</strong><br />Avoid dangerous over-draining.</span>
+                            <span><strong>Prevent Complications</strong>Avoid dangerous over-draining.</span>
                         </li>
                         <li>
                             <MdCheckCircle className="check-icon" />
-                            <span><strong>Visualize Trends</strong><br />Spot fluid balance changes instantly.</span>
+                            <span><strong>Visualize Trends</strong>Spot fluid balance changes instantly.</span>
                         </li>
                         <li>
                             <MdCheckCircle className="check-icon" />
-                            <span><strong>Go Paperless</strong><br />Ditch the notebook for secure logs.</span>
+                            <span><strong>Go Paperless</strong>Ditch the notebook for secure logs.</span>
                         </li>
                         <li>
                             <MdCheckCircle className="check-icon" />
-                            <span><strong>Better Doctor Visits</strong><br />Share accurate reports easily.</span>
+                            <span><strong>Better Doctor Visits</strong>Share accurate reports easily.</span>
                         </li>
                     </ul>
                 </div>

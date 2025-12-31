@@ -14,8 +14,20 @@ export default function History() {
     const [ufMax, setUfMax] = useState("");
     const [baxter, setBaxter] = useState("");
     const [date, setDate] = useState("");
-
     const [filtersApplied, setFiltersApplied] = useState(false);
+
+    /* =========================
+       EDIT STATES
+    ========================= */
+    const [editingId, setEditingId] = useState(null);
+    const [editForm, setEditForm] = useState({
+        fill_volume: "",
+        drain_volume: "",
+        uf: "",
+        weight: "",
+        baxter_strength: "",
+        notes: "",
+    });
 
     /* =========================
        FETCH DATA
@@ -25,23 +37,21 @@ export default function History() {
             const { data: auth } = await supabase.auth.getUser();
             if (!auth?.user) return;
 
-            const { data: patient, error: pErr } = await supabase
+            const { data: patient } = await supabase
                 .from("patients")
                 .select("id")
                 .eq("auth_id", auth.user.id)
                 .single();
 
-            if (pErr || !patient?.id) return;
+            if (!patient?.id) return;
 
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from("pd_exchanges")
                 .select("*")
                 .eq("patient_id", patient.id)
                 .order("timestamp", { ascending: false });
 
-            if (!error) {
-                setSessions(data || []);
-            }
+            setSessions(data || []);
         };
 
         fetchSessions();
@@ -53,7 +63,6 @@ export default function History() {
     const filteredSessions = useMemo(() => {
         if (!sessions.length) return [];
 
-        // Calculate user's average weight
         const weights = sessions
             .map(s => Number(s.weight))
             .filter(w => !Number.isNaN(w));
@@ -85,28 +94,22 @@ export default function History() {
         });
     }, [sessions, weightCategory, ufMin, ufMax, baxter, date]);
 
-
     const visibleSessions = filtersApplied ? filteredSessions : sessions;
 
+    /* =========================
+       FORMAT TIME
+    ========================= */
     const formatTime = (timestamp) => {
         if (!timestamp) return "--";
-
         const timePart = timestamp.split("T")[1];
         if (!timePart) return "--";
 
-        let [hours, minutes] = timePart.slice(0, 5).split(":");
-        hours = Number(hours);
-
-        if (Number.isNaN(hours)) return "--";
-
-        const period = hours >= 12 ? "PM" : "AM";
-        const displayHour = hours % 12 || 12;
-
-        return `${displayHour}:${minutes} ${period}`;
+        let [h, m] = timePart.slice(0, 5).split(":");
+        h = Number(h);
+        const period = h >= 12 ? "PM" : "AM";
+        const display = h % 12 || 12;
+        return `${display}:${m} ${period}`;
     };
-
-
-
 
     /* =========================
        GROUP BY DATE
@@ -124,8 +127,38 @@ export default function History() {
     }, [visibleSessions]);
 
     /* =========================
-       DELETE ACTION
+       EDIT HANDLERS
     ========================= */
+    const startEdit = (s) => {
+        setEditingId(s.id);
+        setEditForm({
+            fill_volume: s.fill_volume || "",
+            drain_volume: s.drain_volume || "",
+            uf: s.uf || "",
+            weight: s.weight || "",
+            baxter_strength: s.baxter_strength || "",
+            notes: s.notes || "",
+        });
+    };
+
+    const saveEdit = async (id) => {
+        const { error } = await supabase
+            .from("pd_exchanges")
+            .update(editForm)
+            .eq("id", id);
+
+        if (!error) {
+            setSessions(prev =>
+                prev.map(s =>
+                    s.id === id ? { ...s, ...editForm } : s
+                )
+            );
+            setEditingId(null);
+        } else {
+            alert("Failed to update session");
+        }
+    };
+
     const deleteSession = async (id) => {
         if (!window.confirm("Delete this PD session?")) return;
         await supabase.from("pd_exchanges").delete().eq("id", id);
@@ -136,75 +169,51 @@ export default function History() {
         <div className="dashboard-container page-padding-bottom">
             <h2 className="dashboard-title">PD History</h2>
 
-            {/* FILTERS SECTION */}
+            {/* FILTERS */}
             <div className="history-filters">
-                <select
-                    value={weightCategory}
-                    onChange={e => setWeightCategory(e.target.value)}
-                >
+                <select value={weightCategory} onChange={e => setWeightCategory(e.target.value)}>
                     <option value="">Weight category</option>
                     <option value="below">Below average</option>
                     <option value="average">Average</option>
                     <option value="above">Above average</option>
                 </select>
 
-                <input
-                    placeholder="UF min"
-                    value={ufMin}
-                    onChange={e => setUfMin(e.target.value)}
-                />
-                <input
-                    placeholder="UF max"
-                    value={ufMax}
-                    onChange={e => setUfMax(e.target.value)}
-                />
+                <input placeholder="UF min" value={ufMin} onChange={e => setUfMin(e.target.value)} />
+                <input placeholder="UF max" value={ufMax} onChange={e => setUfMax(e.target.value)} />
+
                 <select value={baxter} onChange={e => setBaxter(e.target.value)}>
                     <option value="">Baxter %</option>
                     <option value="1.5%">1.5%</option>
                     <option value="2.5%">2.5%</option>
                     <option value="7.5%">7.5%</option>
                 </select>
-                <input
-                    type="date"
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
-                />
 
-                <div style={{ display: "flex", gap: "10px", marginTop: "10px", }}>
-                    <button className="btn primary" onClick={() => setFiltersApplied(true)}>
-                        Apply
-                    </button>
-                    <button
-                        className="btn secondary"
-                        onClick={() => {
-                            setWeightCategory(""); setUfMin(""); setUfMax(""); setBaxter(""); setDate("");
-                            setFiltersApplied(false);
-                        }}
-                    >
-                        Clear
-                    </button>
+                <input type="date" value={date} onChange={e => setDate(e.target.value)} />
+
+                <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                    <button className="btn primary" onClick={() => setFiltersApplied(true)}>Apply</button>
+                    <button className="btn secondary" onClick={() => {
+                        setWeightCategory(""); setUfMin(""); setUfMax(""); setBaxter(""); setDate("");
+                        setFiltersApplied(false);
+                    }}>Clear</button>
                 </div>
 
-                <p style={{ fontSize: "0.85rem", opacity: 0.6, marginTop: "8px" }}>
+                <p style={{ fontSize: "0.85rem", opacity: 0.6 }}>
                     Showing {visibleSessions.length} of {sessions.length} sessions
                 </p>
             </div>
 
-            {/* LIST OF DAYS */}
+            {/* TABLE */}
             {Object.entries(groupedByDate).map(([dateKey, daySessions]) => {
                 const totalUF = daySessions.reduce((sum, s) => sum + (s.uf || 0), 0);
 
                 return (
-                    /* 1. UPDATED CLASS: day-group (matches new CSS) */
                     <div key={dateKey} className="day-group">
-
-                        {/* 2. UPDATED CLASS: day-header (matches new CSS) */}
                         <div className="day-header">
-                            <span style={{ float: 'left' }}>{dateKey}</span>
+                            <span>{dateKey}</span>
                             <span>Total UF: {totalUF} mL</span>
                         </div>
 
-                        {/* 3. CRITICAL: The Scroll Wrapper */}
                         <div className="table-wrapper">
                             <table className="history-table">
                                 <thead>
@@ -222,32 +231,65 @@ export default function History() {
                                 <tbody>
                                     {daySessions.map(s => (
                                         <tr key={s.id}>
+                                            <td>{formatTime(s.timestamp)}</td>
+
+                                            {["fill_volume", "drain_volume", "uf", "weight"].map(f => (
+                                                <td key={f}>
+                                                    {editingId === s.id ? (
+                                                        <input
+                                                            value={editForm[f]}
+                                                            onChange={e =>
+                                                                setEditForm({ ...editForm, [f]: e.target.value })
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        s[f]
+                                                    )}
+                                                </td>
+                                            ))}
+
                                             <td>
-                                                {formatTime(s.timestamp)}
+                                                {editingId === s.id ? (
+                                                    <select
+                                                        value={editForm.baxter_strength}
+                                                        onChange={e =>
+                                                            setEditForm({ ...editForm, baxter_strength: e.target.value })
+                                                        }
+                                                    >
+                                                        <option value="1.5%">1.5%</option>
+                                                        <option value="2.5%">2.5%</option>
+                                                        <option value="7.5%">7.5%</option>
+                                                    </select>
+                                                ) : (
+                                                    s.baxter_strength
+                                                )}
                                             </td>
-                                            <td>{s.fill_volume}</td>
-                                            <td>{s.drain_volume}</td>
 
-                                            {/* UPDATED CLASS: text-green for negative (screenshot style) */}
-                                            <td className={s.uf < 0 ? "text-green" : ""}>
-                                                {s.uf}
+                                            <td>
+                                                {editingId === s.id ? (
+                                                    <input
+                                                        value={editForm.notes}
+                                                        onChange={e =>
+                                                            setEditForm({ ...editForm, notes: e.target.value })
+                                                        }
+                                                    />
+                                                ) : (
+                                                    s.notes || "-"
+                                                )}
                                             </td>
 
-                                            <td>{s.weight}</td>
-                                            <td>{s.baxter_strength}</td>
-                                            <td>{s.notes || "-"}</td>
-
-                                            {/* UPDATED: Button classes for the new style */}
                                             <td className="action-cell">
-                                                <button className="btn-icon edit">
-                                                    ✏️
-                                                </button>
-                                                <button
-                                                    className="btn-icon del"
-                                                    onClick={() => deleteSession(s.id)}
-                                                >
-                                                    🗑️
-                                                </button>
+                                                {editingId === s.id ? (
+                                                    <>
+                                                        <button className="btn-icon save" onClick={() => saveEdit(s.id)}>💾</button>
+                                                        <button className="btn-icon cancel" onClick={() => setEditingId(null)}>❌</button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button className="btn-icon edit" onClick={() => startEdit(s)}>✏️</button>
+                                                        <button className="btn-icon del" onClick={() => deleteSession(s.id)}>🗑️</button>
+                                                    </>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
@@ -257,9 +299,8 @@ export default function History() {
                     </div>
                 );
             })}
-
+            <br /><br /><br />
             <MobileNav />
-            <br /><br /><br /><br />
         </div>
     );
 }
