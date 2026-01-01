@@ -203,7 +203,7 @@ export default function Home() {
 
             <footer className="footer">
                 <p>Made with <span className="heart">❤️</span> to support dialysis patients.</p>
-                <p>© 2024 Care-Assist. Making dialysis easier.</p>
+                <p>© 2025 Care-Assist. Making dialysis easier.</p>
             </footer>
         </div>
     );
