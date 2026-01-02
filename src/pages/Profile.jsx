@@ -24,6 +24,28 @@ export default function Profile() {
         setProfile(patient);
     };
 
+    const toggleDialysisType = async () => {
+        const nextType = profile.dialysis_type === "PD" ? "HD" : "PD";
+
+        const { error } = await supabase
+            .from("patients")
+            .update({ dialysis_type: nextType })
+            .eq("auth_id", (await supabase.auth.getUser()).data.user.id);
+
+        if (error) {
+            console.error(error);
+            alert("Failed to update dialysis type");
+            return;
+        }
+
+        // update UI immediately
+        setProfile((prev) => ({
+            ...prev,
+            dialysis_type: nextType,
+        }));
+    };
+
+
     const handleLogout = async () => {
         await supabase.auth.signOut();
         window.location.href = "/login";
@@ -74,7 +96,12 @@ export default function Profile() {
 
             <div className="profile-card action-card">
                 <button className="profile-btn">Edit Profile</button>
-                <button className="profile-btn">Change Dialysis Type</button>
+                <button className="profile-btn" onClick={toggleDialysisType}>
+                    {profile.dialysis_type === "PD"
+                        ? "Change to Hemodialysis"
+                        : "Change to Peritoneal Dialysis"}
+                </button>
+
                 <button className="logout-btn" onClick={handleLogout}>
                     Logout
                 </button>

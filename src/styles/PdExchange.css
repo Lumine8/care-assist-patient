@@ -1,195 +1,257 @@
-/* ----------------------------------------
-   PAGE CONTAINER
----------------------------------------- */
+/* CONTAINER */
 .pd-container {
-  max-width: 480px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 22px;
-  font-family: system-ui, Arial, sans-serif;
-  background: #f6f8ff;
+  padding: 20px;
+  padding-bottom: 100px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  color: #333;
 }
 
-/* ----------------------------------------
-   TITLE
----------------------------------------- */
-.pd-title {
-  font-size: 26px;
-  font-weight: 700;
+/* HEADER */
+.pd-header {
   text-align: center;
-  margin-bottom: 16px;
-  color: #0a2a5a;
+  margin-bottom: 25px;
 }
 
-.pd-subtitle {
-  text-align: center;
-  font-size: 13px;
-  color: #6b7a99;
-  margin-bottom: 18px;
+.pd-header h2 {
+  color: #003c8f; /* PRIMARY COLOR */
+  margin: 0 0 5px 0;
+  font-size: 1.6rem;
 }
 
-/* ----------------------------------------
-   CARD
----------------------------------------- */
-.pd-card {
-  background: white;
-  padding: 16px 18px;
-  border-radius: 16px;
-  margin-bottom: 18px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+.pd-header p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* FORM LAYOUT */
+.pd-form {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
-.pd-card label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #1a2d50;
-}
-
-.pd-card input,
-.pd-card select,
-.pd-notes {
-  padding: 12px;
-  font-size: 15px;
-  border: 1.5px solid #ccd6e8;
-  border-radius: 10px;
-  background: #f9fbff;
-  transition: 0.2s;
-}
-
-.pd-card input:focus,
-.pd-card select:focus,
-.pd-notes:focus {
-  border-color: #357dff;
-  box-shadow: 0 0 0 3px rgba(53, 125, 255, 0.25);
-}
-
-/* ----------------------------------------
-   NOTES TEXTAREA
----------------------------------------- */
-.pd-notes {
-  resize: none;
-  min-height: 90px;
-  line-height: 1.5;
-}
-
-/* ----------------------------------------
-   UF DISPLAY BOX
----------------------------------------- */
-.uf-display-box {
+.form-card {
   background: white;
-  padding: 22px;
-  border-radius: 18px;
-  margin-bottom: 22px;
-  text-align: center;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f0f0;
 }
 
-.uf-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #223a66;
+.card-subtitle {
+  margin: 0 0 15px 0;
+  font-size: 1rem;
+  color: #003c8f;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
 }
 
-.uf-value {
-  font-size: 32px;
-  font-weight: 800;
-  margin-top: 8px;
-}
-
-/* NEGATIVE = GOOD (GREEN) */
-.uf-neg {
-  color: #0a9e28;
-}
-
-/* POSITIVE = BAD (RED) */
-.uf-pos {
-  color: #d62828;
-}
-
-/* ----------------------------------------
-   FILE UPLOAD
----------------------------------------- */
-.file-upload-wrapper {
+/* GRID SYSTEM */
+.form-row {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.file-upload-btn {
-  padding: 10px 16px;
-  background: #e9f1ff;
-  border: 1px solid #c5d6ff;
-  border-radius: 10px;
-  color: #0054d6;
+.half {
+  width: 50%;
+}
+
+/* INPUTS */
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
   font-weight: 600;
-  width: fit-content;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.file-upload-btn:hover {
-  background: #dce8ff;
-}
-
-.file-upload-input {
-  display: none;
-}
-
-.file-upload-name {
-  font-size: 13px;
   color: #555;
 }
 
-/* ----------------------------------------
-   IMAGE PREVIEW
----------------------------------------- */
-.image-preview {
-  width: 120px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  border: 1px solid #e5e5e5;
+.input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-/* ----------------------------------------
-   SUBMIT BUTTON
----------------------------------------- */
-.submit-btn {
+.field-icon {
+  position: absolute;
+  left: 12px;
+  color: #003c8f;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+.input-icon-wrapper input,
+.input-icon-wrapper select,
+.input-icon-wrapper textarea {
   width: 100%;
-  background: #003c8f;
-  color: white;
+  padding: 12px 12px 12px 40px; /* Space for icon */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.input-icon-wrapper input:focus,
+.input-icon-wrapper select:focus,
+.input-icon-wrapper textarea:focus {
+  outline: none;
+  border-color: #003c8f;
+  box-shadow: 0 0 0 3px rgba(0, 60, 143, 0.1);
+}
+
+/* RESULT BOX (Calculated UF) */
+.highlight-card {
+  border: 1px solid rgba(0, 60, 143, 0.2);
+  background: #fbfdff;
+}
+
+.result-box {
+  margin-top: 15px;
+  background: #eee;
   padding: 15px;
-  border: none;
-  font-size: 17px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px dashed #ccc;
+  transition: all 0.3s ease;
+}
+
+.result-box.positive-uf {
+  background: #e6fffa;
+  border-color: #38b2ac;
+  color: #2c7a7b;
+}
+
+.result-box.negative-uf {
+  background: #fff5f5;
+  border-color: #fc8181;
+  color: #c53030;
+}
+
+.result-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   font-weight: 700;
-  border-radius: 14px;
+}
+
+.result-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 5px 0;
+}
+
+.result-detail {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* FILE UPLOAD */
+.custom-file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 2px dashed #cbd5e0;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 12px;
-  transition: 0.2s ease;
+  background: #f8f9fa;
+  transition: 0.2s;
+  color: #718096;
+}
+
+.custom-file-upload:hover {
+  border-color: #003c8f;
+  color: #003c8f;
+  background: rgba(0, 60, 143, 0.05);
+}
+
+.custom-file-upload input {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.image-preview-container {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.image-preview-container img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-img-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* SUBMIT BUTTON */
+.submit-btn {
+  margin-top: 10px;
+  background-color: #003c8f;
+  color: white;
+  border: none;
+  padding: 14px 16px; /* Adjusted padding */
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px; /* Increased gap between icon and text */
+  transition: transform 0.1s, background-color 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 60, 143, 0.2);
+}
+
+/* 🆕 FIX: SPECIFIC SIZE FOR THE SAVE ICON */
+.submit-btn .btn-icon {
+  font-size: 1.5rem; /* Larger than text */
+  display: block; /* Ensures correct alignment */
 }
 
 .submit-btn:hover {
-  background: #0066ff;
+  background-color: #002a66;
 }
 
 .submit-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
-/* ----------------------------------------
-   MOBILE RESPONSIVENESS
----------------------------------------- */
-@media (max-width: 420px) {
-  .pd-container {
-    padding: 16px;
-  }
-
-  .pd-card {
-    padding: 14px 16px;
-  }
-
-  .uf-value {
-    font-size: 28px;
-  }
+.submit-btn:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
 }

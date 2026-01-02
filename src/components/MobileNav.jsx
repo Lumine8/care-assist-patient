@@ -5,9 +5,6 @@ import {
     MdHistory,
     MdPerson
 } from "react-icons/md";
-// Md = Material Design icons
-// You can also use "react-icons/fa" (FontAwesome) or "react-icons/fi" (Feather)
-
 import "../styles/MobileNav.css";
 
 export default function MobileNav() {
@@ -20,9 +17,9 @@ export default function MobileNav() {
                 <span className="nav-label">Dashboard</span>
             </NavLink>
 
-            <NavLink to="/pd-exchange" className="nav-btn">
+            <NavLink to="/exchange" className="nav-btn">
                 <MdAddCircleOutline className="nav-icon" />
-                <span className="nav-label">Add PD</span>
+                <span className="nav-label">Entry</span>
             </NavLink>
 
             <NavLink to="/history" className="nav-btn">

@@ -1,12 +1,22 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient";
-import "../styles/PdExchange.css";
-
 import MobileNav from "../components/MobileNav";
 import gsap from "gsap";
+import {
+    MdAccessTime,
+    MdMonitorWeight,
+    MdOpacity,
+    MdWaterDrop,
+    MdImage,
+    MdNoteAlt,
+    MdSave,
+    MdDelete
+} from "react-icons/md";
+import "../styles/PdExchange.css";
 
 export default function PDExchange() {
     const containerRef = useRef(null);
+    const [loading, setLoading] = useState(false);
 
     // -------------------------
     // FORM STATES
@@ -14,7 +24,7 @@ export default function PDExchange() {
     const [baxterStrength, setBaxterStrength] = useState("1.5%");
     const [bagVolume, setBagVolume] = useState(2000);
     const [leftover, setLeftover] = useState(0);
-    const [drain, setDrain] = useState(0);
+    const [drain, setDrain] = useState(""); // Default to empty string for better UX
     const [weight, setWeight] = useState("");
     const [notes, setNotes] = useState("");
 
@@ -22,40 +32,26 @@ export default function PDExchange() {
     const [previewURL, setPreviewURL] = useState(null);
 
     // -------------------------
-    // GENERATE DEFAULT IST WITHOUT SECONDS
+    // TIME & CALCULATIONS
     // -------------------------
     const generateIST = () => {
-        const now = new Date().toLocaleString("sv-SE", {
-            timeZone: "Asia/Kolkata"
-        });
-        // sv-SE format is YYYY-MM-DD HH:MM:SS → remove seconds
-        const formatted = now.replace(" ", "T").slice(0, 16);
-        return formatted;
+        const now = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
+        return now.replace(" ", "T").slice(0, 16);
     };
 
     const [timestamp, setTimestamp] = useState(generateIST());
 
-    // -------------------------
-    // FIX TIMESTAMP (ADD SECONDS ALWAYS)
-    // -------------------------
-    const normalizeTimestamp = (ts) => {
-        // If format is YYYY-MM-DDTHH:MM (length 16) → append :00
-        if (ts.length === 16) return ts + ":00";
-
-        return ts;
-    };
-
-    // -------------------------
-    // CALCULATIONS
-    // -------------------------
-    const fillVolume = bagVolume - leftover;
-    const uf = fillVolume - drain;
+    // Auto-calculate UF
+    // Note: Kept your formula: (Bag - Leftover) - Drain
+    const fillVolume = bagVolume - (leftover || 0);
+    const drainVal = drain === "" ? 0 : parseFloat(drain);
+    const uf = drainVal - fillVolume; // ⚡️ Standard logic: Drain - Fill = Removed Fluid
 
     useEffect(() => {
         gsap.from(containerRef.current, {
             opacity: 0,
-            y: 30,
-            duration: 0.6,
+            y: 20,
+            duration: 0.5,
             ease: "power2.out",
         });
     }, []);
@@ -69,16 +65,18 @@ export default function PDExchange() {
         setPreviewURL(URL.createObjectURL(file));
     };
 
+    const removeImage = () => {
+        setImageFile(null);
+        setPreviewURL(null);
+    };
+
     const handleImageUpload = async (file) => {
-        const fileName = `${Date.now()}-${file.name}`;
-        const { data, error } = await supabase.storage
+        const fileName = `${Date.now()}-${file.name.replace(/\s/g, '')}`;
+        const { error } = await supabase.storage
             .from("pd_images")
             .upload(fileName, file);
-        console.log(data);
-        if (error) {
-            alert("Image upload error: " + error.message);
-            return null;
-        }
+
+        if (error) throw error;
 
         return supabase.storage
             .from("pd_images")
@@ -86,166 +84,212 @@ export default function PDExchange() {
     };
 
     // -------------------------
-    // SUBMIT HANDLER
+    // SUBMIT
     // -------------------------
     const handleSubmit = async () => {
-        const user = await supabase.auth.getUser();
-        const authId = user.data.user.id;
+        if (loading) return;
+        setLoading(true);
 
-        const { data: patient } = await supabase
-            .from("patients")
-            .select("id")
-            .eq("auth_id", authId)
-            .single();
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("No user found");
 
-        let uploadedImageURL = null;
-        if (imageFile) {
-            uploadedImageURL = await handleImageUpload(imageFile);
-        }
+            const { data: patient } = await supabase
+                .from("patients")
+                .select("id")
+                .eq("auth_id", user.id)
+                .single();
 
-        const fixedTimestamp = normalizeTimestamp(timestamp);
+            let uploadedImageURL = null;
+            if (imageFile) {
+                uploadedImageURL = await handleImageUpload(imageFile);
+            }
 
-        const { error } = await supabase.from("pd_exchanges").insert({
-            patient_id: patient.id,
-            timestamp: fixedTimestamp, // FIXED — exact timestamp saved
-            baxter_strength: baxterStrength,
-            fill_volume: fillVolume,
-            drain_volume: drain,
-            weight,
-            notes,
-            image_url: uploadedImageURL,
-        });
+            const finalTimestamp = timestamp.length === 16 ? timestamp + ":00" : timestamp;
 
-        if (error) {
-            alert(error.message);
-        } else {
-            gsap.to(".submit-btn", { scale: 1.08, duration: 0.15, yoyo: true, repeat: 1 });
-            alert("PD Exchange Recorded!");
+            const { error } = await supabase.from("pd_exchanges").insert({
+                patient_id: patient.id,
+                timestamp: finalTimestamp,
+                baxter_strength: baxterStrength,
+                fill_volume: fillVolume,
+                drain_volume: drainVal,
+                // uf: uf,
+                weight: weight || null,
+                notes: notes,
+                image_url: uploadedImageURL,
+            });
+
+            if (error) throw error;
+
+            gsap.to(".submit-btn", { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+            alert("✅ Exchange Saved Successfully!");
+
+            // Optional: Reset form or redirect
+            // window.location.href = "/history";
+
+        } catch (error) {
+            alert("Error: " + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <>
-            <div ref={containerRef} className="pd-container">
+            <div ref={containerRef} className="pd-container page-padding-bottom">
 
-                <h2 className="pd-title">Peritoneal Dialysis (PD) Exchange</h2>
-                <p>* marked fields are mandatory</p>
+                <header className="pd-header">
+                    <h2>PD Exchange</h2>
+                    <p>Enter your exchange details below.</p>
+                </header>
 
-                {/* TIMESTAMP */}
-                <div className="pd-card">
-                    <label>Date & Time</label>
-                    <input
-                        type="datetime-local"
-                        value={timestamp}
-                        onChange={(e) => setTimestamp(e.target.value)}
-                    />
-                </div>
+                <div className="pd-form">
 
-                {/* WEIGHT */}
-                <div className="pd-card">
-                    <label>Weight (kg)*</label>
-                    <input
-                        type="number"
-                        placeholder="Enter weight"
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
-                    />
-                </div>
-
-                {/* BAXTER STRENGTH */}
-                <div className="pd-card">
-                    <label>Baxter Strength (%)</label>
-                    <select
-                        value={baxterStrength}
-                        onChange={(e) => setBaxterStrength(e.target.value)}
-                    >
-                        <option value="1.5%">1.5%</option>
-                        <option value="2.5%">2.5%</option>
-                        <option value="7.5%">7.5%</option>
-                    </select>
-                </div>
-
-                {/* BAG VOLUME */}
-                <div className="pd-card">
-                    <label>Bag Volume (mL)</label>
-                    <input
-                        type="number"
-                        value={bagVolume}
-                        onChange={(e) => setBagVolume(Number(e.target.value))}
-                    />
-                </div>
-
-                <div className="pd-card">
-                    <label>Leftover in Bag (mL)*</label>
-                    <input
-                        type="number"
-                        value={leftover}
-                        onChange={(e) => setLeftover(Number(e.target.value))}
-                    />
-                </div>
-
-                {/* DRAIN */}
-                <div className="pd-card">
-                    <label>Drain (mL)*</label>
-                    <input
-                        type="number"
-                        value={drain}
-                        onChange={(e) => setDrain(Number(e.target.value))}
-                    />
-                </div>
-
-                {/* UF DISPLAY */}
-                <div className="uf-display-box">
-                    <div className="uf-title">UF:</div>
-                    <div className={`uf-value ${uf < 0 ? "uf-neg" : "uf-pos"}`}>
-                        {isNaN(uf) ? "-" : `${uf} mL`}
+                    {/* SECTION 1: TIMING & WEIGHT */}
+                    <div className="form-card">
+                        <div className="form-row">
+                            <div className="form-group half">
+                                <label>Time</label>
+                                <div className="input-icon-wrapper">
+                                    <MdAccessTime className="field-icon" />
+                                    <input
+                                        type="datetime-local"
+                                        value={timestamp}
+                                        onChange={(e) => setTimestamp(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group half">
+                                <label>Weight (kg)</label>
+                                <div className="input-icon-wrapper">
+                                    <MdMonitorWeight className="field-icon" />
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        placeholder="0.0"
+                                        value={weight}
+                                        onChange={(e) => setWeight(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                {/* IMAGE UPLOAD */}
-                <div className="pd-card">
-                    <label>Upload Drain Image (optional)</label>
-                    <div className="file-upload-wrapper">
-                        <label className="file-upload-btn" htmlFor="drainImage">
-                            Choose Image
-                        </label>
-
-                        <input
-                            id="drainImage"
-                            type="file"
-                            accept="image/*"
-                            className="file-upload-input"
-                            onChange={(e) => handleImageChange(e.target.files[0])}
-                        />
-
-                        {previewURL && (
-                            <img src={previewURL} alt="preview" className="image-preview" />
-                        )}
-
-                        <span className="file-upload-name">
-                            {imageFile ? imageFile.name : "No file chosen"}
-                        </span>
+                    {/* SECTION 2: DIALYSIS PARAMS */}
+                    <div className="form-card">
+                        <div className="form-row">
+                            <div className="form-group half">
+                                <label>Strength</label>
+                                <div className="input-icon-wrapper">
+                                    <MdOpacity className="field-icon" />
+                                    <select
+                                        value={baxterStrength}
+                                        onChange={(e) => setBaxterStrength(e.target.value)}
+                                    >
+                                        <option value="1.5%">1.5% (Yellow)</option>
+                                        <option value="2.5%">2.5% (Green)</option>
+                                        <option value="7.5%">7.5% (Purple)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="form-group half">
+                                <label>Bag Vol (mL)</label>
+                                <div className="input-icon-wrapper">
+                                    <MdWaterDrop className="field-icon" />
+                                    <input
+                                        type="number"
+                                        value={bagVolume}
+                                        onChange={(e) => setBagVolume(Number(e.target.value))}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                {/* NOTES */}
-                <div className="pd-card">
-                    <label>Notes (optional)</label>
-                    <textarea
-                        placeholder="Enter observations (cloudiness, discomfort, fibrin, color, smell, etc.)"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        className="pd-notes"
-                        rows={3}
-                    ></textarea>
-                </div>
+                    {/* SECTION 3: FLUID BALANCE (The Logic Core) */}
+                    <div className="form-card highlight-card">
+                        <h3 className="card-subtitle">Fluid Balance</h3>
 
-                <button className="submit-btn" onClick={handleSubmit}>
-                    Save Exchange
-                </button>
+                        <div className="form-group">
+                            <label>Leftover in Bag (mL)</label>
+                            <div className="input-icon-wrapper">
+                                <MdWaterDrop className="field-icon" />
+                                <input
+                                    type="number"
+                                    placeholder="Enter amount left in bag"
+                                    value={leftover}
+                                    onChange={(e) => setLeftover(Number(e.target.value))}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Drain Volume (mL)</label>
+                            <div className="input-icon-wrapper">
+                                <MdOpacity className="field-icon" />
+                                <input
+                                    type="number"
+                                    placeholder="Enter total drain"
+                                    value={drain}
+                                    onChange={(e) => setDrain(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        {/* LIVE CALCULATION DISPLAY */}
+                        <div className={`result-box ${uf > 0 ? "positive-uf" : "negative-uf"}`}>
+                            <div className="result-label">Net Ultrafiltration (UF)</div>
+                            <div className="result-value">
+                                {drain ? (uf > 0 ? `+${uf}` : uf) : "--"} mL
+                            </div>
+                            <div className="result-detail">
+                                (Drain {drainVal || 0} - Fill {fillVolume})
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* SECTION 4: EXTRAS */}
+                    <div className="form-card">
+                        <div className="form-group">
+                            <label>Upload Image</label>
+                            {!previewURL ? (
+                                <label className="custom-file-upload">
+                                    <input type="file" accept="image/*" onChange={(e) => handleImageChange(e.target.files[0])} />
+                                    <MdImage className="upload-icon" />
+                                    <span>Tap to upload drain image</span>
+                                </label>
+                            ) : (
+                                <div className="image-preview-container">
+                                    <img src={previewURL} alt="Preview" />
+                                    <button className="remove-img-btn" onClick={removeImage}>
+                                        <MdDelete />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Notes</label>
+                            <div className="input-icon-wrapper">
+                                <MdNoteAlt className="field-icon" />
+                                <textarea
+                                    rows="2"
+                                    placeholder="Clarity, fibrin, pain, etc."
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* SUBMIT BUTTON */}
+                    <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
+                        <MdSave className="btn-icon" />
+                        {loading ? "Saving..." : "Save Record"}
+                    </button>
+
+                </div>
             </div>
-
-            <br /><br /><br /><br />
             <MobileNav />
         </>
     );

@@ -1,0 +1,209 @@
+/* CONTAINER */
+.hd-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 100px; /* Space for MobileNav */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  color: #333;
+}
+
+/* HEADER */
+.hd-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.hd-header h2 {
+  color: #003c8f; /* 🆕 Primary Color applied to title */
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+}
+
+.hd-header p {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* CARD COMMON STYLE */
+.card,
+.history-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+}
+
+/* FORM STYLES */
+.hd-form {
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  color: #999;
+  font-size: 1.2rem;
+}
+
+.hd-form input,
+.hd-form textarea {
+  width: 100%;
+  padding: 12px 12px 12px 40px; /* padding-left for icon */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+/* 🆕 Focus State with Primary Color */
+.hd-form input:focus,
+.hd-form textarea:focus {
+  outline: none;
+  border-color: #003c8f;
+  box-shadow: 0 0 0 3px rgba(0, 60, 143, 0.1);
+}
+
+/* 🆕 BUTTON STYLE */
+.btn-save {
+  width: 100%;
+  margin-top: 10px;
+  background-color: #003c8f; /* Primary Color */
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.btn-save:hover {
+  background-color: #002a66; /* Slightly darker for hover */
+}
+
+.btn-save:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* HISTORY SECTION */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.history-card {
+  padding: 15px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-date {
+  font-weight: 600;
+  color: #444;
+}
+
+/* 🆕 UF Badge using a light version of primary color */
+.uf-badge {
+  background-color: rgba(0, 60, 143, 0.1);
+  color: #003c8f;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(0, 60, 143, 0.2);
+  font-weight: 600;
+}
+
+/* Pre/Post Weight Grid */
+.card-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px 15px;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-box .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.stat-box .value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.stat-arrow {
+  color: #bdc3c7;
+  font-size: 1.2rem;
+}
+
+.card-note {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #eee;
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
