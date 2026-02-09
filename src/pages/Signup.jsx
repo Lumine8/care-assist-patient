@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import "../styles/Auth.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import "../styles/Auth.css";
 
 export default function Signup() {
     const navigate = useNavigate();
@@ -18,6 +17,13 @@ export default function Signup() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    // Helper function to validate email format
+    const isValidEmail = (email) => {
+        // Simple but effective regex for email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const handleSignup = async () => {
         try {
             const { username, email, hospitalId, password } = form;
@@ -28,7 +34,13 @@ export default function Signup() {
                 return;
             }
 
-            // 2️⃣ Create user in Supabase Auth
+            // 2️⃣ Validate Email Format
+            if (!isValidEmail(email)) {
+                alert("Please enter a valid email address (e.g., user@example.com).");
+                return;
+            }
+
+            // 3️⃣ Create user in Supabase Auth
             const { data: signupData, error: signupError } = await supabase.auth.signUp({
                 email,
                 password,
@@ -42,30 +54,33 @@ export default function Signup() {
                 return;
             }
 
+            // Supabase returns a user object even if email confirmation is required,
+            // but usually we proceed to insert into our custom table.
             const authUser = signupData.user;
 
-            // 3️⃣ Insert into patients table
-            const { error: patientError } = await supabase.from("patients").insert({
-                auth_id: authUser.id,
-                username,
-                email,
-                hospital_id: hospitalId
-            });
+            if (authUser) {
+                // 4️⃣ Insert into patients table
+                const { error: patientError } = await supabase.from("patients").insert({
+                    auth_id: authUser.id,
+                    username,
+                    email,
+                    hospital_id: hospitalId
+                });
 
-            if (patientError) {
-                alert(patientError.message);
-                return;
+                if (patientError) {
+                    alert(patientError.message);
+                    return;
+                }
+
+                alert("Account created! You can now log in.");
+                navigate("/login");
             }
-
-            alert("Account created! You can now log in.");
-            navigate("/login");
 
         } catch (err) {
             console.error(err);
             alert("Unexpected error occurred.");
         }
     };
-
 
     return (
         <div className="auth-wrapper">
